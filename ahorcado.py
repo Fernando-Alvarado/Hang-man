@@ -90,47 +90,55 @@ def PrintHangWord(string):
     return question
         
 def CompareHangManWord(string, letter):
-    number = string.find(letter)
-    if number != -1:
-        delate = list(string)
-        del delate[number]
-        return [number, ''.join(delate)]
-    else:
+    array = list(string)
+    try:
+        numero = array.index(letter)
+        array[numero] = '*'
+        return [numero, ''.join(array)]
+    except ValueError:
         return False
     
-#def Repeat(word, letter):
-#       
-#    if CompareHangManWord(word, letter) != False:
-#        var = PrintHangWord(word)
-#        array = var[CompareHangManWord(word, letter)[0]]= letter
-#        return Repeat(''.join(array), letter)
-#    else: 
-#        return word  
+def Repeat(word, letter, array): 
+    if CompareHangManWord(word, letter) != False:
+        Response_Array = CompareHangManWord(word, letter)
+        array.append( Response_Array[0])  
+        return Repeat( Response_Array[1], letter, array)
+    else: 
+        if len(array)!=0:
+            return array  
+        else:
+            return False
+
+def ImagePrint(dibujo, tries, PrintWord):
+    print(dibujo[tries])
+    print(PrintWord)
+
+def message(mensaje):
+    input(mensaje)
+    exit()
 
 def hangManMain():
-    tries = 0
-    print(dibujo[tries])
-    word = palabras[random.randint(0,22)]
-    completeAnswer = PrintHangWord(word)
-    print(completeAnswer)
-    state = False
-    print(tries != 6)
-    print(state != True)
-    while tries != 6 and state != True:
-        answer = input('Dime una letras  ')
-        if CompareHangManWord(word, answer) != False:
-             completeAnswer[CompareHangManWord(word, answer)[0]] = answer
-             word = CompareHangManWord(word, answer)[1]
-             print(dibujo[tries])
-             print(completeAnswer)
+    tries = 0 #fallo que he cometido
+    word = palabras[random.randint(0, len(dibujo)-1)]#palabra que saco al azar
+    AnswersGotten = len(word)#saber cuendo gane
+    PrintWord = PrintHangWord(word) #lo necesito para luego imprimir la palabra del ahorcado
+    ImagePrint(dibujo, tries, PrintWord)
+    while tries != 6:
+        answer = input('Dime una letra  ')
+        if Repeat(word, answer, []) != False:
+            for i in Repeat(word, answer, []):
+                PrintWord[i] = answer
+            ImagePrint(dibujo, tries, PrintWord)
+            AnswersGotten -= len(Repeat(word, answer, []))
+            if AnswersGotten == 0:
+                print(PrintWord)
+                message('Felicidades Ganaste')
         else:
             tries += 1
-            print(dibujo[tries])
-            print(completeAnswer)
+            ImagePrint(dibujo, tries, PrintWord)
             if tries == 6:
                 print(dibujo[6])
-                input('presione cualquier tecla para salir')
-                exit()
+                message('Repampanos Perdiste')
 
 if __name__ == '__main__':
     hangManMain()
